@@ -50,7 +50,7 @@ int get_random_tetromino_index(void);
 
 void render_tetromino(SDL_Renderer *renderer, struct tetromino *tetromino);
 
-void move_tetromino(struct tetromino *tetromino, enum movement_direction direction);
+void move_tetromino(struct tetromino *tetromino, enum movement_direction direction, bool is_user);
 
 struct tetromino transpose_tetromino(struct tetromino tetromino);
 

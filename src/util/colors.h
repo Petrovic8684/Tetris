@@ -33,9 +33,9 @@
         255, 0, 0, 255 \
     }
 
-#define COLOR_BLUE   \
-    {                \
-        0, 0, 0, 255 \
+#define COLOR_BLUE     \
+    {                  \
+        0, 0, 255, 255 \
     }
 
 #endif

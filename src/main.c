@@ -5,14 +5,16 @@
 #include <SDL2/SDL.h>
 
 #include "tetromino/tetromino.h"
+#include "util/sounds/sounds.h"
+#include "util/fonts/fonts.h"
 
-#define WINDOW_WIDTH 800
+#define WINDOW_WIDTH 600
 #define WINDOW_HEIGHT 600
 
 #define GRID_WIDTH_CELLS 10
 #define GRID_HEIGHT_CELLS 20
 
-static float game_speed = 400.0f;
+static float game_speed = 200.0f;
 static bool is_sequence_over = true;
 
 static int board[GRID_WIDTH_CELLS][GRID_HEIGHT_CELLS] = {0};
@@ -50,13 +52,13 @@ void handle_input(SDL_Event event)
     switch (event.key.keysym.sym)
     {
     case SDLK_LEFT:
-        move_tetromino(current_tetromino, LEFT);
+        move_tetromino(current_tetromino, LEFT, true);
         break;
     case SDLK_RIGHT:
-        move_tetromino(current_tetromino, RIGHT);
+        move_tetromino(current_tetromino, RIGHT, true);
         break;
     case SDLK_DOWN:
-        move_tetromino(current_tetromino, DOWN);
+        move_tetromino(current_tetromino, DOWN, true);
         break;
     case SDLK_SPACE:
         flip_tetromino(current_tetromino);
@@ -83,7 +85,7 @@ void poll_events(bool *is_window_open)
 
 void render_grid(SDL_Renderer *renderer, int x, int y)
 {
-    SDL_SetRenderDrawColor(renderer, 20, 20, 20, 255);
+    SDL_SetRenderDrawColor(renderer, 40, 40, 40, 255);
 
     SDL_Rect cell;
     cell.w = cell.h = 30;
@@ -99,11 +101,12 @@ void render_grid(SDL_Renderer *renderer, int x, int y)
 
 void render(SDL_Renderer *renderer)
 {
-    SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
+    SDL_SetRenderDrawColor(renderer, 10, 10, 10, 255);
     SDL_RenderClear(renderer);
 
     render_grid(renderer, 0, 0);
     render_tetromino(renderer, current_tetromino);
+    render_score(renderer, 350, 20);
 
     SDL_RenderPresent(renderer);
     SDL_Delay(game_speed);
@@ -122,12 +125,14 @@ void generate_new_tetrominos()
 void keep_window_open(SDL_Renderer *renderer)
 {
     bool is_window_open = true;
+    play_sound("assets/sounds/music.wav");
+
     while (is_window_open)
     {
         generate_new_tetrominos();
         render(renderer);
         poll_events(&is_window_open);
-        move_tetromino(current_tetromino, DOWN);
+        move_tetromino(current_tetromino, DOWN, false);
     }
 }
 
@@ -141,6 +146,7 @@ int main(int argc, char *argv[])
     create_window_and_renderer("Tetris", &window, &renderer);
     keep_window_open(renderer);
 
+    sound_cleanup();
     SDL_DestroyRenderer(renderer);
     SDL_DestroyWindow(window);
     SDL_Quit();

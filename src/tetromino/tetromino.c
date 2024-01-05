@@ -1,11 +1,11 @@
 #include "tetromino.h"
 
 struct tetromino possible_tetrominos[NUMBER_OF_TETROMINO_TYPES] = {
-    {COLOR_CYAN, shape_I, {0, 0}, 4, {{1, 0, 0, 0}, {1, 0, 0, 0}, {1, 0, 0, 0}, {1, 0, 0, 0}}},
+    {COLOR_CYAN, shape_I, {0, 0}, 4, {{0, 1, 0, 0}, {0, 1, 0, 0}, {0, 1, 0, 0}, {0, 1, 0, 0}}},
     {COLOR_YELLOW, shape_O, {0, 0}, 2, {{1, 1, 0, 0}, {1, 1, 0, 0}, {0, 0, 0, 0}, {0, 0, 0, 0}}},
     {COLOR_MAGENTA, shape_T, {0, 0}, 3, {{0, 1, 0, 0}, {1, 1, 1, 0}, {0, 0, 0, 0}, {0, 0, 0, 0}}},
-    {COLOR_GREEN, shape_S, {0, 0}, 3, {{0, 1, 1, 0}, {1, 1, 0, 0}, {0, 0, 0, 0}, {0, 0, 0, 0}}},
-    {COLOR_RED, shape_Z, {0, 0}, 3, {{1, 1, 0, 0}, {0, 1, 1, 0}, {0, 0, 0, 0}, {0, 0, 0, 0}}},
+    {COLOR_GREEN, shape_S, {0, 0}, 3, {{0, 0, 0, 0}, {0, 1, 1, 0}, {1, 1, 0, 0}, {0, 0, 0, 0}}},
+    {COLOR_RED, shape_Z, {0, 0}, 3, {{0, 0, 0, 0}, {1, 1, 0, 0}, {0, 1, 1, 0}, {0, 0, 0, 0}}},
     {COLOR_BLUE, shape_J, {0, 0}, 3, {{0, 1, 0, 0}, {0, 1, 0, 0}, {1, 1, 0, 0}, {0, 0, 0, 0}}},
     {COLOR_ORANGE, shape_L, {0, 0}, 3, {{0, 1, 0, 0}, {0, 1, 0, 0}, {0, 1, 1, 0}, {0, 0, 0, 0}}}};
 
@@ -30,28 +30,22 @@ void render_tetromino(SDL_Renderer *renderer, struct tetromino *tetromino)
                 rect.y = (tetromino->position.y + j) * TILE_SIZE;
                 SDL_SetRenderDrawColor(renderer, tetromino->color.r, tetromino->color.g, tetromino->color.b, 255);
                 SDL_RenderFillRect(renderer, &rect);
-                SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
+                SDL_SetRenderDrawColor(renderer, 40, 40, 40, 255);
                 SDL_RenderDrawRect(renderer, &rect);
             }
 }
 
-void move_tetromino(struct tetromino *tetromino, enum movement_direction direction)
+void move_tetromino(struct tetromino *tetromino, enum movement_direction direction, bool is_user)
 {
-    if (tetromino->position.x < 0)
+    if (tetromino->position.x < 0 && is_user == true)
     {
         tetromino->position.x = 0;
         return;
     }
 
-    else if (tetromino->position.x > 8)
+    else if (tetromino->position.x > 8 && is_user == true)
     {
         tetromino->position.x = 8;
-        return;
-    }
-
-    else if (tetromino->position.y > 16)
-    {
-        tetromino->position.y = 16;
         return;
     }
 
