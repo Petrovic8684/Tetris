@@ -14,10 +14,18 @@
 #define GRID_WIDTH_CELLS 10
 #define GRID_HEIGHT_CELLS 20
 
-static float game_speed = 200.0f;
-static bool is_sequence_over = true;
+static bool should_spawn_tetromino = true;
 
-static int board[GRID_WIDTH_CELLS][GRID_HEIGHT_CELLS] = {0};
+static float game_speed = 150.0f;
+
+struct grid
+{
+    int content[GRID_HEIGHT_CELLS][GRID_WIDTH_CELLS];
+    SDL_Color color[GRID_HEIGHT_CELLS][GRID_WIDTH_CELLS];
+};
+
+static struct grid grid, grid_snapshot;
+
 static struct tetromino *current_tetromino = NULL;
 
 void initialize_sdl(void)
@@ -85,18 +93,71 @@ void poll_events(bool *is_window_open)
 
 void render_grid(SDL_Renderer *renderer, int x, int y)
 {
-    SDL_SetRenderDrawColor(renderer, 40, 40, 40, 255);
-
     SDL_Rect cell;
     cell.w = cell.h = 30;
 
-    for (int i = 0; i < GRID_WIDTH_CELLS; i++)
-        for (int j = 0; j < GRID_HEIGHT_CELLS; j++)
+    SDL_Rect rect;
+    rect.w = rect.h = TILE_SIZE;
+
+    for (int i = 0; i < GRID_HEIGHT_CELLS; i++)
+        for (int j = 0; j < GRID_WIDTH_CELLS; j++)
         {
-            cell.x = x + (i * 30);
-            cell.y = y + (j * 30);
+            SDL_SetRenderDrawColor(renderer, 40, 40, 40, 255);
+
+            cell.x = x + (j * 30);
+            cell.y = y + (i * 30);
             SDL_RenderDrawRect(renderer, &cell);
+
+            if (grid.content[i][j] == 1)
+            {
+                rect.x = j * TILE_SIZE;
+                rect.y = i * TILE_SIZE;
+                SDL_SetRenderDrawColor(renderer, grid.color[i][j].r, grid.color[i][j].g, grid.color[i][j].b, 255);
+                SDL_RenderFillRect(renderer, &rect);
+                SDL_SetRenderDrawColor(renderer, 40, 40, 40, 255);
+                SDL_RenderDrawRect(renderer, &rect);
+            }
         }
+}
+
+void lock_current_tetromino(void)
+{
+    memcpy(&grid_snapshot, &grid, sizeof(struct grid));
+    current_tetromino = NULL;
+    free(current_tetromino);
+    should_spawn_tetromino = true;
+}
+
+void print_grid(void)
+{
+    for (int i = 0; i < GRID_HEIGHT_CELLS; i++)
+    {
+        for (int j = 0; j < GRID_WIDTH_CELLS; j++)
+        {
+            fprintf(stdout, "%d ", grid.content[i][j]);
+        }
+        fprintf(stdout, "\n");
+    }
+
+    fprintf(stdout, "\n\n");
+}
+
+void update_grid(void)
+{
+    memcpy(&grid, &grid_snapshot, sizeof(struct grid));
+    for (int i = 0; i < current_tetromino->size; i++)
+        for (int j = 0; j < current_tetromino->size; j++)
+        {
+            if (i + current_tetromino->position.y + current_tetromino->current_size.y > GRID_HEIGHT_CELLS)
+            {
+                lock_current_tetromino();
+                return;
+            }
+            grid.content[i + current_tetromino->position.y][j + current_tetromino->position.x] = current_tetromino->content[i][j];
+            grid.color[i + current_tetromino->position.y][j + current_tetromino->position.x] = current_tetromino->color;
+        }
+
+    print_grid();
 }
 
 void render(SDL_Renderer *renderer)
@@ -105,7 +166,6 @@ void render(SDL_Renderer *renderer)
     SDL_RenderClear(renderer);
 
     render_grid(renderer, 0, 0);
-    render_tetromino(renderer, current_tetromino);
     render_score(renderer, 350, 20);
 
     SDL_RenderPresent(renderer);
@@ -114,12 +174,18 @@ void render(SDL_Renderer *renderer)
 
 void generate_new_tetrominos()
 {
-    if (is_sequence_over == true)
+    if (should_spawn_tetromino == true)
     {
         current_tetromino = (struct tetromino *)malloc(sizeof(struct tetromino));
-        current_tetromino = &possible_tetrominos[get_random_tetromino_index()];
-        is_sequence_over = false;
+        memcpy(current_tetromino, &possible_tetrominos[get_random_tetromino_index()], sizeof(struct tetromino));
+        should_spawn_tetromino = false;
     }
+}
+
+void initialize_grid(void)
+{
+    memset(&grid.content, 0, sizeof(int[GRID_HEIGHT_CELLS][GRID_WIDTH_CELLS]));
+    memset(&grid_snapshot.content, 0, sizeof(int[GRID_HEIGHT_CELLS][GRID_WIDTH_CELLS]));
 }
 
 void keep_window_open(SDL_Renderer *renderer)
@@ -127,12 +193,15 @@ void keep_window_open(SDL_Renderer *renderer)
     bool is_window_open = true;
     play_sound("assets/sounds/music.wav");
 
+    initialize_grid();
+
     while (is_window_open)
     {
         generate_new_tetrominos();
         render(renderer);
         poll_events(&is_window_open);
         move_tetromino(current_tetromino, DOWN, false);
+        update_grid();
     }
 }
 
@@ -146,6 +215,7 @@ int main(int argc, char *argv[])
     create_window_and_renderer("Tetris", &window, &renderer);
     keep_window_open(renderer);
 
+    free(current_tetromino);
     sound_cleanup();
     SDL_DestroyRenderer(renderer);
     SDL_DestroyWindow(window);

@@ -1,5 +1,6 @@
 {
-    "files.associations": {
-        "sdl.h": "c"
-    }
+  "files.associations": {
+    "sdl.h": "c",
+    "tetromino.h": "c"
+  }
 }

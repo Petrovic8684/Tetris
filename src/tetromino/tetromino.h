@@ -11,7 +11,7 @@
 #define NUMBER_OF_TETROMINO_TYPES 7
 #define TETROMINO_FALL_DELAY 1000
 
-struct position
+struct vector2
 {
     int x;
     int y;
@@ -39,8 +39,9 @@ struct tetromino
 {
     const SDL_Color color;
     const enum tetromino_shape shape;
-    struct position position;
-    const int size;
+    struct vector2 position;
+    struct vector2 current_size;
+    int size;
     int content[MAX_TETROMINO_CONTENT_SIZE][MAX_TETROMINO_CONTENT_SIZE];
 };
 
