@@ -6,10 +6,8 @@
 #include <time.h>
 #include "../util/colors.h"
 
-#define TILE_SIZE 30
 #define MAX_TETROMINO_CONTENT_SIZE 4
 #define NUMBER_OF_TETROMINO_TYPES 7
-#define TETROMINO_FALL_DELAY 1000
 
 struct vector2
 {
@@ -45,18 +43,14 @@ struct tetromino
     int content[MAX_TETROMINO_CONTENT_SIZE][MAX_TETROMINO_CONTENT_SIZE];
 };
 
+extern struct tetromino *current_tetromino;
 extern struct tetromino possible_tetrominos[NUMBER_OF_TETROMINO_TYPES];
 
 int get_random_tetromino_index(void);
-
 void render_tetromino(SDL_Renderer *renderer, struct tetromino *tetromino);
-
 void move_tetromino(struct tetromino *tetromino, enum movement_direction direction, bool is_user);
-
 struct tetromino transpose_tetromino(struct tetromino tetromino);
-
 struct tetromino reverse_columns_of_tetromino(struct tetromino tetromino);
-
 void flip_tetromino(struct tetromino *tetromino); // clockwise
 
 #endif

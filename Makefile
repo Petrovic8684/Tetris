@@ -1,2 +1,2 @@
 all:
-	gcc -I src/sdl2/include -L src/sdl2/lib -L src/util -L src/tetromino src/main.c src/tetromino/tetromino.c src/util/sounds/sounds.c src/util/fonts/fonts.c -o Tetris -lSDL2main -lSDL2 -lSDL2_mixer -lSDL2_ttf
+	gcc -I src/sdl2/include -L src/sdl2/lib -L src/util -L src/tetromino -L src/grid -L src/game src/main.c src/tetromino/tetromino.c src/grid/grid.c src/game/game.c src/util/sounds/sounds.c src/util/fonts/fonts.c -o Tetris -lSDL2main -lSDL2 -lSDL2_mixer -lSDL2_ttf

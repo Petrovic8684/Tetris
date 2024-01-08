@@ -1,5 +1,7 @@
 #include "tetromino.h"
 
+struct tetromino *current_tetromino = NULL;
+
 struct tetromino possible_tetrominos[NUMBER_OF_TETROMINO_TYPES] = {
     {COLOR_CYAN, shape_I, {0, 0}, {1, 4}, 4, {{0, 1, 0, 0}, {0, 1, 0, 0}, {0, 1, 0, 0}, {0, 1, 0, 0}}},
     {COLOR_YELLOW, shape_O, {0, 0}, {2, 2}, 2, {{1, 1, 0, 0}, {1, 1, 0, 0}, {0, 0, 0, 0}, {0, 0, 0, 0}}},

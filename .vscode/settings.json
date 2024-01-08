@@ -1,6 +1,8 @@
 {
   "files.associations": {
     "sdl.h": "c",
-    "tetromino.h": "c"
+    "tetromino.h": "c",
+    "grid.h": "c",
+    "game.h": "c",
   }
 }
