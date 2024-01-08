@@ -1,18 +1,15 @@
 #ifndef TETROMINO_H
 #define TETROMINO_H
 
-#include <string.h>
-#include <stdbool.h>
-#include <time.h>
-#include "../util/colors.h"
+#include "../game/game.h"
 
 #define MAX_TETROMINO_CONTENT_SIZE 4
 #define NUMBER_OF_TETROMINO_TYPES 7
 
 struct vector2
 {
-    int x;
-    int y;
+    Uint8 x;
+    Uint8 y;
 };
 
 enum movement_direction
@@ -39,18 +36,16 @@ struct tetromino
     const enum tetromino_shape shape;
     struct vector2 position;
     struct vector2 current_size;
-    int size;
-    int content[MAX_TETROMINO_CONTENT_SIZE][MAX_TETROMINO_CONTENT_SIZE];
+    Uint8 content[MAX_TETROMINO_CONTENT_SIZE][MAX_TETROMINO_CONTENT_SIZE];
 };
 
 extern struct tetromino *current_tetromino;
 extern struct tetromino possible_tetrominos[NUMBER_OF_TETROMINO_TYPES];
 
-int get_random_tetromino_index(void);
-void render_tetromino(SDL_Renderer *renderer, struct tetromino *tetromino);
-void move_tetromino(struct tetromino *tetromino, enum movement_direction direction, bool is_user);
-struct tetromino transpose_tetromino(struct tetromino tetromino);
-struct tetromino reverse_columns_of_tetromino(struct tetromino tetromino);
-void flip_tetromino(struct tetromino *tetromino); // clockwise
+Uint8 get_random_tetromino_index(void);
+void move_current_tetromino(enum movement_direction direction);
+void transpose_current_tetromino(void);
+void reverse_columns_of_current_tetromino(void);
+void flip_current_tetromino(void); // clockwise
 
 #endif

@@ -10,7 +10,7 @@ void play_sound(char *path)
     SDL_LoadWAV(path, &wavSpec, &wavBuffer, &wavLength);
 
     SDL_AudioDeviceID deviceId = SDL_OpenAudioDevice(NULL, 0, &wavSpec, NULL, 0);
-    int success = SDL_QueueAudio(deviceId, wavBuffer, wavLength);
+    Uint8 success = SDL_QueueAudio(deviceId, wavBuffer, wavLength);
     SDL_PauseAudioDevice(deviceId, 0);
 }
 

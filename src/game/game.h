@@ -3,12 +3,14 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include <stdbool.h>
 #include <string.h>
+#include <stdbool.h>
+#include <time.h>
 #include <SDL2/SDL.h>
 
 #include "../tetromino/tetromino.h"
 #include "../grid/grid.h"
+#include "../util/colors.h"
 #include "../util/sounds/sounds.h"
 #include "../util/fonts/fonts.h"
 

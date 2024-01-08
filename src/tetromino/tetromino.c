@@ -3,74 +3,74 @@
 struct tetromino *current_tetromino = NULL;
 
 struct tetromino possible_tetrominos[NUMBER_OF_TETROMINO_TYPES] = {
-    {COLOR_CYAN, shape_I, {0, 0}, {1, 4}, 4, {{0, 1, 0, 0}, {0, 1, 0, 0}, {0, 1, 0, 0}, {0, 1, 0, 0}}},
-    {COLOR_YELLOW, shape_O, {0, 0}, {2, 2}, 2, {{1, 1, 0, 0}, {1, 1, 0, 0}, {0, 0, 0, 0}, {0, 0, 0, 0}}},
-    {COLOR_MAGENTA, shape_T, {0, 0}, {2, 3}, 3, {{0, 1, 0, 0}, {1, 1, 1, 0}, {0, 0, 0, 0}, {0, 0, 0, 0}}},
-    {COLOR_GREEN, shape_S, {0, 0}, {2, 3}, 3, {{0, 0, 0, 0}, {0, 1, 1, 0}, {1, 1, 0, 0}, {0, 0, 0, 0}}},
-    {COLOR_RED, shape_Z, {0, 0}, {2, 3}, 3, {{0, 0, 0, 0}, {1, 1, 0, 0}, {0, 1, 1, 0}, {0, 0, 0, 0}}},
-    {COLOR_BLUE, shape_J, {0, 0}, {3, 2}, 3, {{0, 1, 0, 0}, {0, 1, 0, 0}, {1, 1, 0, 0}, {0, 0, 0, 0}}},
-    {COLOR_ORANGE, shape_L, {0, 0}, {3, 2}, 3, {{0, 1, 0, 0}, {0, 1, 0, 0}, {0, 1, 1, 0}, {0, 0, 0, 0}}}};
+    {COLOR_CYAN, shape_I, {0, 0}, {1, 4}, {{1}, {1}, {1}, {1}}},
+    {COLOR_YELLOW, shape_O, {0, 0}, {2, 2}, {{1, 1}, {1, 1}}},
+    {COLOR_MAGENTA, shape_T, {0, 0}, {3, 2}, {{0, 1, 0}, {1, 1, 1}}},
+    {COLOR_GREEN, shape_S, {0, 0}, {3, 2}, {{0, 1, 1}, {1, 1, 0}}},
+    {COLOR_RED, shape_Z, {0, 0}, {3, 2}, {{1, 1, 0}, {0, 1, 1}}},
+    {COLOR_BLUE, shape_J, {0, 0}, {2, 3}, {{0, 1}, {0, 1}, {1, 1}}},
+    {COLOR_ORANGE, shape_L, {0, 0}, {2, 3}, {{1, 0}, {1, 0}, {1, 1}}}};
 
-int get_random_tetromino_index(void)
+Uint8 get_random_tetromino_index(void)
 {
     srand(time(NULL));
     return rand() % NUMBER_OF_TETROMINO_TYPES;
 }
 
-void move_tetromino(struct tetromino *tetromino, enum movement_direction direction, bool is_user)
+void move_current_tetromino(enum movement_direction direction)
 {
     switch (direction)
     {
     case LEFT:
-        tetromino->position.x--;
+        if (current_tetromino->position.x - 1 < 0)
+            return;
+
+        current_tetromino->position.x--;
         break;
     case RIGHT:
-        tetromino->position.x++;
+        if (current_tetromino->position.x - current_tetromino->current_size.x > GRID_WIDTH_CELLS / 2)
+            return;
+
+        current_tetromino->position.x++;
         break;
     case DOWN:
-        tetromino->position.y++;
+        current_tetromino->position.y++;
         break;
     }
 }
 
-void flip_sizes_of_tetromino(struct tetromino *tetromino)
+void transpose_current_tetromino(void)
 {
-    int temp_size;
+    struct vector2 transposed_size;
 
-    temp_size = (*tetromino).current_size.x;
-    (*tetromino).current_size.x = (*tetromino).current_size.y;
-    (*tetromino).current_size.y = temp_size;
-}
+    transposed_size.x = current_tetromino->current_size.y;
+    transposed_size.y = current_tetromino->current_size.x;
 
-struct tetromino transpose_tetromino(struct tetromino tetromino)
-{
-    struct tetromino temp = tetromino;
-    for (int i = 0; i < tetromino.size; i++)
-        for (int j = 0; j < tetromino.size; j++)
+    Uint8 transposed_content[MAX_TETROMINO_CONTENT_SIZE][MAX_TETROMINO_CONTENT_SIZE];
+
+    for (Uint8 i = 0; i < current_tetromino->current_size.y; i++)
+        for (Uint8 j = 0; j < current_tetromino->current_size.x; j++)
         {
-            temp.content[i][j] = tetromino.content[j][i];
+            transposed_content[j][i] = current_tetromino->content[i][j];
         }
 
-    return temp;
+    memcpy(current_tetromino->content, transposed_content, sizeof(Uint8[MAX_TETROMINO_CONTENT_SIZE][MAX_TETROMINO_CONTENT_SIZE]));
+    current_tetromino->current_size = transposed_size;
 }
 
-struct tetromino reverse_columns_of_tetromino(struct tetromino tetromino)
+void reverse_columns_of_current_tetromino(void)
 {
-    struct tetromino temp = tetromino;
-    for (int i = 0; i < tetromino.size; i++)
-        for (int j = 0; j < tetromino.size / 2; j++)
+    for (Uint8 i = 0; i < current_tetromino->current_size.y; i++)
+        for (Uint8 j = 0; j < current_tetromino->current_size.x / 2; j++)
         {
-            bool t = tetromino.content[i][j];
-            temp.content[i][j] = tetromino.content[i][tetromino.size - j - 1];
-            temp.content[i][tetromino.size - j - 1] = t;
+            bool t = current_tetromino->content[i][j];
+            current_tetromino->content[i][j] = current_tetromino->content[i][current_tetromino->current_size.x - j - 1];
+            current_tetromino->content[i][current_tetromino->current_size.x - j - 1] = t;
         }
-
-    return temp;
 }
 
-void flip_tetromino(struct tetromino *tetromino) // clockwise
+void flip_current_tetromino(void) // clockwise
 {
-    memcpy(tetromino->content, transpose_tetromino(*tetromino).content, sizeof(int[4][4]));
-    flip_sizes_of_tetromino(tetromino);
-    memcpy(tetromino->content, reverse_columns_of_tetromino(*tetromino).content, sizeof(int[4][4]));
+    transpose_current_tetromino();
+    reverse_columns_of_current_tetromino();
 }

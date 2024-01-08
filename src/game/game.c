@@ -32,16 +32,16 @@ void handle_input(SDL_Event event)
     switch (event.key.keysym.sym)
     {
     case SDLK_LEFT:
-        move_tetromino(current_tetromino, LEFT, true);
+        move_current_tetromino(LEFT);
         break;
     case SDLK_RIGHT:
-        move_tetromino(current_tetromino, RIGHT, true);
+        move_current_tetromino(RIGHT);
         break;
-    case SDLK_DOWN:
-        move_tetromino(current_tetromino, DOWN, true);
-        break;
+        // case SDLK_DOWN:  Causes major bug. Revisit.
+        // move_current_tetromino(DOWN);
+        // break;
     case SDLK_SPACE:
-        flip_tetromino(current_tetromino);
+        flip_current_tetromino();
         break;
     }
 }
@@ -87,7 +87,7 @@ void keep_window_open(void)
     {
         render();
         poll_events();
-        move_tetromino(current_tetromino, DOWN, false);
+        move_current_tetromino(DOWN);
         update_grid();
     }
 }

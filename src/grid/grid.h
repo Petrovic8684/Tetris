@@ -1,11 +1,6 @@
 #ifndef GRID_H
 #define GRID_H
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <SDL2/SDL.h>
-
-#include "../tetromino/tetromino.h"
 #include "../game/game.h"
 
 #define GRID_WIDTH_CELLS 10
@@ -13,7 +8,7 @@
 
 struct grid
 {
-    int content[GRID_HEIGHT_CELLS][GRID_WIDTH_CELLS];
+    Uint8 content[GRID_HEIGHT_CELLS][GRID_WIDTH_CELLS];
     SDL_Color color[GRID_HEIGHT_CELLS][GRID_WIDTH_CELLS];
 };
 

@@ -1,8 +1,6 @@
 #ifndef COLORS_H
 #define COLORS_H
 
-#include <SDL2/SDL.h>
-
 #define COLOR_CYAN       \
     {                    \
         0, 255, 255, 255 \

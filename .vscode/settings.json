@@ -4,5 +4,7 @@
     "tetromino.h": "c",
     "grid.h": "c",
     "game.h": "c",
+    "stdbool.h": "c",
+    "stdio.h": "c"
   }
 }
