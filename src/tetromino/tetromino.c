@@ -3,13 +3,13 @@
 struct tetromino *current_tetromino = NULL;
 
 struct tetromino possible_tetrominos[NUMBER_OF_TETROMINO_TYPES] = {
-    {COLOR_CYAN, shape_I, {0, 0}, {1, 4}, {{1}, {1}, {1}, {1}}},
-    {COLOR_YELLOW, shape_O, {0, 0}, {2, 2}, {{1, 1}, {1, 1}}},
-    {COLOR_MAGENTA, shape_T, {0, 0}, {3, 2}, {{0, 1, 0}, {1, 1, 1}}},
-    {COLOR_GREEN, shape_S, {0, 0}, {3, 2}, {{0, 1, 1}, {1, 1, 0}}},
-    {COLOR_RED, shape_Z, {0, 0}, {3, 2}, {{1, 1, 0}, {0, 1, 1}}},
-    {COLOR_BLUE, shape_J, {0, 0}, {2, 3}, {{0, 1}, {0, 1}, {1, 1}}},
-    {COLOR_ORANGE, shape_L, {0, 0}, {2, 3}, {{1, 0}, {1, 0}, {1, 1}}}};
+    {COLOR_CYAN, SHAPE_I, {4, 0}, {1, 4}, {{1}, {1}, {1}, {1}}},
+    {COLOR_YELLOW, SHAPE_O, {4, 0}, {2, 2}, {{1, 1}, {1, 1}}},
+    {COLOR_MAGENTA, SHAPE_T, {4, 0}, {3, 2}, {{0, 1, 0}, {1, 1, 1}}},
+    {COLOR_GREEN, SHAPE_S, {4, 0}, {3, 2}, {{0, 1, 1}, {1, 1, 0}}},
+    {COLOR_RED, SHAPE_Z, {4, 0}, {3, 2}, {{1, 1, 0}, {0, 1, 1}}},
+    {COLOR_BLUE, SHAPE_J, {4, 0}, {2, 3}, {{0, 1}, {0, 1}, {1, 1}}},
+    {COLOR_ORANGE, SHAPE_L, {4, 0}, {2, 3}, {{1, 0}, {1, 0}, {1, 1}}}};
 
 Uint8 get_random_tetromino_index(void)
 {
@@ -17,7 +17,7 @@ Uint8 get_random_tetromino_index(void)
     return rand() % NUMBER_OF_TETROMINO_TYPES;
 }
 
-void move_current_tetromino(enum movement_direction direction)
+void move_current_tetromino(enum movement_direction direction, bool is_user)
 {
     switch (direction)
     {
@@ -28,13 +28,15 @@ void move_current_tetromino(enum movement_direction direction)
         current_tetromino->position.x--;
         break;
     case RIGHT:
-        if (current_tetromino->position.x - current_tetromino->current_size.x > GRID_WIDTH_CELLS / 2)
+        if (current_tetromino->position.x + current_tetromino->current_size.x >= GRID_WIDTH_CELLS)
             return;
 
         current_tetromino->position.x++;
         break;
     case DOWN:
         current_tetromino->position.y++;
+        if (is_user == true)
+            increase_score(-1);
         break;
     }
 }
@@ -73,4 +75,10 @@ void flip_current_tetromino(void) // clockwise
 {
     transpose_current_tetromino();
     reverse_columns_of_current_tetromino();
+}
+
+void initialize_first_tetromino(void)
+{
+    current_tetromino = (struct tetromino *)malloc(sizeof(struct tetromino));
+    memcpy(current_tetromino, &possible_tetrominos[get_random_tetromino_index()], sizeof(struct tetromino)); // generates a new tetromino.
 }

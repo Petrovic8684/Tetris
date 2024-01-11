@@ -1,21 +1,20 @@
 #include "sounds.h"
 
-SDL_AudioSpec wavSpec;
-Uint32 wavLength;
-Uint8 *wavBuffer;
-SDL_AudioDeviceID deviceId;
+SDL_AudioDeviceID device_id;
+struct sound music;
 
-void play_sound(char *path)
+void play_sound(char *path, struct sound *sound)
 {
-    SDL_LoadWAV(path, &wavSpec, &wavBuffer, &wavLength);
+    SDL_LoadWAV(path, &sound->wav_spec, &sound->wav_buffer, &sound->wav_length);
 
-    SDL_AudioDeviceID deviceId = SDL_OpenAudioDevice(NULL, 0, &wavSpec, NULL, 0);
-    Uint8 success = SDL_QueueAudio(deviceId, wavBuffer, wavLength);
-    SDL_PauseAudioDevice(deviceId, 0);
+    SDL_AudioDeviceID device_id = SDL_OpenAudioDevice(NULL, 0, &sound->wav_spec, NULL, 0);
+    Uint8 success = SDL_QueueAudio(device_id, sound->wav_buffer, sound->wav_length);
+    SDL_PauseAudioDevice(device_id, 0);
 }
 
-void sound_cleanup(void)
+void sound_cleanup(struct sound *sound)
 {
-    SDL_CloseAudioDevice(deviceId);
-    SDL_FreeWAV(wavBuffer);
+    if (device_id)
+        SDL_CloseAudioDevice(device_id);
+    SDL_FreeWAV(sound->wav_buffer);
 }

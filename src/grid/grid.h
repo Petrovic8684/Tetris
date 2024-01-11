@@ -12,9 +12,15 @@ struct grid
     SDL_Color color[GRID_HEIGHT_CELLS][GRID_WIDTH_CELLS];
 };
 
-static struct grid *grid, *grid_snapshot;
+extern bool should_lock;
+
+extern struct grid *grid;
+extern struct grid *grid_snapshot;
 void initialize_grid(void);
 void render_grid(SDL_Renderer *renderer);
+void shift_grid_down(Uint8 row);
+void check_for_cleared_rows(void);
+void make_snapshot(void);
 void update_grid(void);
 
 #endif

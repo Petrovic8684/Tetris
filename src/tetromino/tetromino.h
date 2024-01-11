@@ -21,18 +21,18 @@ enum movement_direction
 
 enum tetromino_shape
 {
-    shape_I,
-    shape_O,
-    shape_T,
-    shape_S,
-    shape_Z,
-    shape_J,
-    shape_L
+    SHAPE_I,
+    SHAPE_O,
+    SHAPE_T,
+    SHAPE_S,
+    SHAPE_Z,
+    SHAPE_J,
+    SHAPE_L
 };
 
 struct tetromino
 {
-    const SDL_Color color;
+    SDL_Color color;
     const enum tetromino_shape shape;
     struct vector2 position;
     struct vector2 current_size;
@@ -43,9 +43,10 @@ extern struct tetromino *current_tetromino;
 extern struct tetromino possible_tetrominos[NUMBER_OF_TETROMINO_TYPES];
 
 Uint8 get_random_tetromino_index(void);
-void move_current_tetromino(enum movement_direction direction);
+void move_current_tetromino(enum movement_direction direction, bool is_user);
 void transpose_current_tetromino(void);
 void reverse_columns_of_current_tetromino(void);
 void flip_current_tetromino(void); // clockwise
+void initialize_first_tetromino(void);
 
 #endif

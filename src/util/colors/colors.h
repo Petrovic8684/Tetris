@@ -1,6 +1,13 @@
 #ifndef COLORS_H
 #define COLORS_H
 
+#include <SDL2/SDL.h>
+
+#define COLOR_WHITE        \
+    {                      \
+        255, 255, 255, 255 \
+    }
+
 #define COLOR_CYAN       \
     {                    \
         0, 255, 255, 255 \
@@ -35,5 +42,9 @@
     {                  \
         0, 0, 255, 255 \
     }
+
+extern const SDL_Color color_magenta;
+extern const SDL_Color color_cyan;
+extern const SDL_Color color_red;
 
 #endif

@@ -10,7 +10,7 @@
 
 #include "../tetromino/tetromino.h"
 #include "../grid/grid.h"
-#include "../util/colors.h"
+#include "../util/colors/colors.h"
 #include "../util/sounds/sounds.h"
 #include "../util/fonts/fonts.h"
 
@@ -18,19 +18,29 @@
 #define WINDOW_HEIGHT 600
 
 #define TILE_SIZE 30
+#define MAX_FPS 60.0
+#define STARTING_GAME_SPEED 1000;
 
-static SDL_Window *window = NULL;
-static SDL_Renderer *renderer = NULL;
+extern SDL_Window *window;
+extern SDL_Renderer *renderer;
 
-static bool is_window_open = true;
-static float game_speed = 150.0f;
+extern bool is_window_open;
+extern bool is_game_lost;
+extern float game_speed;
+
+extern int score;
+extern int level;
+extern int lines;
 
 void initialize_sdl(void);
 void create_window_and_renderer(const char *title);
 void handle_input(SDL_Event event);
 void poll_events(void);
 void render(void);
-void keep_window_open(void);
-void cleanup(void);
+void initialize_everything(bool is_restart);
+void increase_lines_and_level(void);
+void increase_score(int8_t rows_cleared_count);
+void start_game_and_keep_running(void);
+void cleanup(bool is_restart);
 
 #endif

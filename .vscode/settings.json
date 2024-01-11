@@ -5,6 +5,10 @@
     "grid.h": "c",
     "game.h": "c",
     "stdbool.h": "c",
-    "stdio.h": "c"
+    "stdio.h": "c",
+    "colors.h": "c",
+    "stdlib.h": "c",
+    "fonts.h": "c",
+    "sdl_audio.h": "c"
   }
 }
