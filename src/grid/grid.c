@@ -24,11 +24,14 @@ void render_grid(SDL_Renderer *renderer)
     for (Uint8 i = 0; i < GRID_HEIGHT_CELLS; i++)
         for (Uint8 j = 0; j < GRID_WIDTH_CELLS; j++)
         {
-            SDL_SetRenderDrawColor(renderer, 40, 40, 40, 255);
+            if (grid_style == GRID_ON)
+            {
+                SDL_SetRenderDrawColor(renderer, color_gray.r, color_gray.g, color_gray.b, 255);
 
-            cell.x = j * TILE_SIZE;
-            cell.y = i * TILE_SIZE;
-            SDL_RenderDrawRect(renderer, &cell);
+                cell.x = j * TILE_SIZE;
+                cell.y = i * TILE_SIZE;
+                SDL_RenderDrawRect(renderer, &cell);
+            }
 
             if (grid->content[i][j] == 1)
             {
@@ -36,8 +39,12 @@ void render_grid(SDL_Renderer *renderer)
                 rect.y = i * TILE_SIZE;
                 SDL_SetRenderDrawColor(renderer, grid->color[i][j].r, grid->color[i][j].g, grid->color[i][j].b, 255);
                 SDL_RenderFillRect(renderer, &rect);
-                SDL_SetRenderDrawColor(renderer, 40, 40, 40, 255);
-                SDL_RenderDrawRect(renderer, &rect);
+
+                if (grid_style == GRID_ON || grid_style == GRID_ONLY_TETROMINOES)
+                {
+                    SDL_SetRenderDrawColor(renderer, color_gray.r, color_gray.g, color_gray.b, 255);
+                    SDL_RenderDrawRect(renderer, &rect);
+                }
             }
         }
 }
@@ -103,16 +110,13 @@ void make_snapshot(void)
     if (check_has_reached_end())
         is_game_lost = true;
 
-    memcpy(grid_snapshot, grid, sizeof(struct grid));                                                        // locks the current tetromino so it permanently stays on the board.
-    memcpy(current_tetromino, &possible_tetrominos[get_random_tetromino_index()], sizeof(struct tetromino)); // generates a new tetromino.
+    memcpy(grid_snapshot, grid, sizeof(struct grid));                                                         // locks the current tetromino so it permanently stays on the board.
+    memcpy(current_tetromino, &possible_tetrominoes[get_random_tetromino_index()], sizeof(struct tetromino)); // generates a new tetromino.
     check_for_cleared_rows();
 }
 
 void update_grid(void)
 {
-    if (current_tetromino->position.y + current_tetromino->current_size.y > GRID_HEIGHT_CELLS) // if the tetromino reaches bottom
-        make_snapshot();
-
     if (should_lock == true)
     {
         make_snapshot();
@@ -126,7 +130,10 @@ void update_grid(void)
             if (grid->content[i + current_tetromino->position.y][j + current_tetromino->position.x] == 1 && current_tetromino->content[i][j] == 0)
                 continue;
 
-            if (grid->content[i + current_tetromino->position.y + 1][j + current_tetromino->position.x] == 1 && current_tetromino->content[i][j] == 1) // if tetrominos overlap
+            if (i + current_tetromino->position.y + 1 >= GRID_HEIGHT_CELLS) // if the tetromino reaches bottom.
+                should_lock = true;
+
+            if (grid->content[i + current_tetromino->position.y + 1][j + current_tetromino->position.x] == 1 && current_tetromino->content[i][j] == 1) // if tetrominos overlap.
                 should_lock = true;
 
             grid->content[i + current_tetromino->position.y][j + current_tetromino->position.x] = current_tetromino->content[i][j];

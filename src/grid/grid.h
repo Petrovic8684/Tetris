@@ -12,6 +12,13 @@ struct grid
     SDL_Color color[GRID_HEIGHT_CELLS][GRID_WIDTH_CELLS];
 };
 
+enum grid_style
+{
+    GRID_ON,
+    GRID_ONLY_TETROMINOES,
+    GRID_OFF
+};
+
 extern bool should_lock;
 
 extern struct grid *grid;

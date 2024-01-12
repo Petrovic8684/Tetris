@@ -40,13 +40,14 @@ struct tetromino
 };
 
 extern struct tetromino *current_tetromino;
-extern struct tetromino possible_tetrominos[NUMBER_OF_TETROMINO_TYPES];
+extern struct tetromino possible_tetrominoes[NUMBER_OF_TETROMINO_TYPES];
 
 Uint8 get_random_tetromino_index(void);
+void initialize_first_tetromino(void);
 void move_current_tetromino(enum movement_direction direction, bool is_user);
 void transpose_current_tetromino(void);
 void reverse_columns_of_current_tetromino(void);
 void flip_current_tetromino(void); // clockwise
-void initialize_first_tetromino(void);
+void hard_drop(void);
 
 #endif

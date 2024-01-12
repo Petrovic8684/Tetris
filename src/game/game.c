@@ -5,11 +5,15 @@ SDL_Renderer *renderer = NULL;
 
 bool is_window_open = true;
 bool is_game_lost = false;
-float game_speed = STARTING_GAME_SPEED;
+int game_speed = STARTING_GAME_SPEED;
+
+bool can_hard_drop = true;
 
 int score = 0;
 int level = 0;
 int lines = 0;
+
+enum grid_style grid_style = GRID_ON;
 
 void initialize_sdl(void)
 {
@@ -55,7 +59,14 @@ void handle_input(SDL_Event event)
         flip_current_tetromino();
         break;
     case SDLK_SPACE:
-        // hard_drop();
+        if (can_hard_drop == true)
+        {
+            hard_drop();
+            can_hard_drop = false;
+        }
+        break;
+    case SDLK_g:
+        grid_style = (grid_style + 1) % 3;
         break;
     }
 }
@@ -107,31 +118,53 @@ void initialize_everything(bool is_restart)
     initialize_grid();
 }
 
+void increase_game_speed(void)
+{
+    if (level <= 29)
+        game_speed = STARTING_GAME_SPEED - 35 * level;
+}
+
 void increase_lines_and_level(void)
 {
     lines++;
     if (lines % 10 == 0)
+    {
         level++;
+        increase_game_speed();
+    }
 
     has_text_changed = true;
 }
 
 void increase_score(int8_t rows_cleared_count)
 {
+    if (score >= MAX_SCORE)
+        return;
+
     switch (rows_cleared_count)
     {
     case 1:
+        if (score + 40 * (level + 1) >= MAX_SCORE)
+            return;
         score += 40 * (level + 1);
         break;
     case 2:
+        if (score + 100 * (level + 1) >= MAX_SCORE)
+            return;
         score += 100 * (level + 1);
         break;
     case 3:
+        if (score + 300 * (level + 1) >= MAX_SCORE)
+            return;
         score += 300 * (level + 1);
         break;
     case 4:
+        if (score + 1200 * (level + 1) >= MAX_SCORE)
+            return;
         score += 1200 * (level + 1);
     case -1:
+        if (score + 1 >= MAX_SCORE)
+            return;
         score++;
     }
 
@@ -141,7 +174,8 @@ void increase_score(int8_t rows_cleared_count)
 void start_game_and_keep_running(void)
 {
     Uint32 start_time = SDL_GetTicks();
-    Uint32 end_time, elapsed_time;
+    Uint32 music_start_time = SDL_GetTicks();
+    Uint32 end_time, elapsed_time, music_end_time, music_elapsed_time;
 
 game:
     while (is_window_open == true && is_game_lost == false)
@@ -150,12 +184,23 @@ game:
         poll_events();
 
         end_time = SDL_GetTicks();
+        music_end_time = SDL_GetTicks();
+
         elapsed_time = end_time - start_time;
+        music_elapsed_time = music_end_time - music_start_time;
 
         if (elapsed_time > game_speed)
         {
             start_time = end_time;
+            if (can_hard_drop == false)
+                can_hard_drop = true;
             move_current_tetromino(DOWN, false);
+        }
+
+        if (music_elapsed_time > 83540) // 83540 is the music length in milliseconds.
+        {
+            music_start_time = music_end_time;
+            play_sound("assets/sounds/music.wav", &music);
         }
 
         update_grid();
