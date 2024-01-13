@@ -10,7 +10,12 @@
 
 #define COLOR_GRAY      \
     {                   \
-        40, 40, 40, 255 \
+        20, 20, 20, 255 \
+    }
+
+#define COLOR_BLACK  \
+    {                \
+        0, 0, 0, 255 \
     }
 
 #define COLOR_CYAN       \
@@ -52,5 +57,6 @@ extern const SDL_Color color_magenta;
 extern const SDL_Color color_cyan;
 extern const SDL_Color color_red;
 extern const SDL_Color color_gray;
+extern const SDL_Color color_black;
 
 #endif

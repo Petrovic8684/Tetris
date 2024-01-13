@@ -96,6 +96,14 @@ void reverse_columns_of_current_tetromino(void)
 
 bool check_is_flip_valid(void)
 {
+    Uint8 bigger_dimension;
+    if (current_tetromino->current_size.x > current_tetromino->current_size.y)
+        bigger_dimension = current_tetromino->current_size.x;
+    else
+        bigger_dimension = current_tetromino->current_size.y;
+
+    if (bigger_dimension + current_tetromino->position.x > GRID_WIDTH_CELLS)
+        return false;
 
     return true;
 }

@@ -118,16 +118,15 @@ void initialize_everything(bool is_restart)
     initialize_grid();
 }
 
-void increase_game_speed(void)
+inline void increase_game_speed(void)
 {
-    if (level <= 29)
-        game_speed = STARTING_GAME_SPEED - 35 * level;
+    game_speed = STARTING_GAME_SPEED - 35 * level;
 }
 
 void increase_lines_and_level(void)
 {
     lines++;
-    if (lines % 10 == 0)
+    if (lines % 10 == 0 && level < 30)
     {
         level++;
         increase_game_speed();
@@ -212,7 +211,6 @@ game:
         cleanup(true);
         initialize_everything(true);
 
-        SDL_Delay(1000);
         goto game;
     }
 }

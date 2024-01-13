@@ -56,12 +56,18 @@ void shift_grid_down(Uint8 row)
         {
             grid->content[row - i - 1][j] = grid->content[row - i - 2][j];
             grid_snapshot->content[row - i - 1][j] = grid_snapshot->content[row - i - 2][j];
+
+            grid->color[row - i - 1][j] = grid->color[row - i - 2][j];
+            grid_snapshot->color[row - i - 1][j] = grid_snapshot->color[row - i - 2][j];
         }
 
     for (Uint8 j = 0; j < GRID_WIDTH_CELLS; j++)
     {
         grid->content[0][j] = 0;
         grid_snapshot->content[0][j] = 0;
+
+        grid->color[0][j] = color_black;
+        grid_snapshot->color[0][j] = color_black;
     }
 
     increase_lines_and_level();
