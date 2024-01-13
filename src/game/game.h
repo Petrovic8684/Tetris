@@ -26,6 +26,7 @@ extern SDL_Window *window;
 extern SDL_Renderer *renderer;
 
 extern bool is_window_open;
+extern bool is_in_menu;
 extern bool is_game_lost;
 extern int game_speed;
 
@@ -35,6 +36,7 @@ extern int score;
 extern int level;
 extern int lines;
 
+extern bool are_colors_randomized;
 extern enum grid_style grid_style;
 
 void initialize_sdl(void);

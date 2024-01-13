@@ -21,6 +21,9 @@ void initialize_first_tetromino(void)
 {
     current_tetromino = (struct tetromino *)malloc(sizeof(struct tetromino));
     memcpy(current_tetromino, &possible_tetrominoes[get_random_tetromino_index()], sizeof(struct tetromino)); // generates a new tetromino.
+
+    if (are_colors_randomized == true)
+        current_tetromino->color = get_random_color();
 }
 
 void move_current_tetromino(enum movement_direction direction, bool is_user)

@@ -118,6 +118,8 @@ void make_snapshot(void)
 
     memcpy(grid_snapshot, grid, sizeof(struct grid));                                                         // locks the current tetromino so it permanently stays on the board.
     memcpy(current_tetromino, &possible_tetrominoes[get_random_tetromino_index()], sizeof(struct tetromino)); // generates a new tetromino.
+    if (are_colors_randomized == true)
+        current_tetromino->color = get_random_color();
     check_for_cleared_rows();
 }
 

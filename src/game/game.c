@@ -4,6 +4,7 @@ SDL_Window *window = NULL;
 SDL_Renderer *renderer = NULL;
 
 bool is_window_open = true;
+bool is_in_menu = true;
 bool is_game_lost = false;
 int game_speed = STARTING_GAME_SPEED;
 
@@ -13,6 +14,7 @@ int score = 0;
 int level = 0;
 int lines = 0;
 
+bool are_colors_randomized = false;
 enum grid_style grid_style = GRID_ON;
 
 void initialize_sdl(void)
@@ -46,19 +48,38 @@ void handle_input(SDL_Event event)
 {
     switch (event.key.keysym.sym)
     {
+    case SDLK_RETURN:
+        if (is_in_menu == false)
+            return;
+        is_in_menu = false;
+        break;
+    case SDLK_ESCAPE:
+        if (is_in_menu == true)
+            return;
+        is_in_menu = true;
     case SDLK_LEFT:
+        if (is_in_menu == true)
+            return;
         move_current_tetromino(LEFT, true);
         break;
     case SDLK_RIGHT:
+        if (is_in_menu == true)
+            return;
         move_current_tetromino(RIGHT, true);
         break;
     case SDLK_DOWN:
+        if (is_in_menu == true)
+            return;
         move_current_tetromino(DOWN, true);
         break;
     case SDLK_UP:
+        if (is_in_menu == true)
+            return;
         flip_current_tetromino();
         break;
     case SDLK_SPACE:
+        if (is_in_menu == true)
+            return;
         if (can_hard_drop == true)
         {
             hard_drop();
@@ -66,8 +87,15 @@ void handle_input(SDL_Event event)
         }
         break;
     case SDLK_g:
+        if (is_in_menu == true)
+            return;
         grid_style = (grid_style + 1) % 3;
         break;
+    case SDLK_c:
+        if (is_in_menu == true)
+            return;
+
+        are_colors_randomized = !are_colors_randomized;
     }
 }
 
@@ -90,7 +118,7 @@ void poll_events(void)
 
 void render(void)
 {
-    SDL_SetRenderDrawColor(renderer, 10, 10, 10, 255);
+    SDL_SetRenderDrawColor(renderer, color_black.r, color_black.g, color_black.b, 255);
     SDL_RenderClear(renderer);
 
     render_grid(renderer);
@@ -112,6 +140,8 @@ void initialize_everything(bool is_restart)
     level = 0;
     lines = 0;
 
+    has_game_text_changed = true;
+
     game_speed = STARTING_GAME_SPEED;
 
     initialize_first_tetromino();
@@ -132,7 +162,7 @@ void increase_lines_and_level(void)
         increase_game_speed();
     }
 
-    has_text_changed = true;
+    has_game_text_changed = true;
 }
 
 void increase_score(int8_t rows_cleared_count)
@@ -167,7 +197,14 @@ void increase_score(int8_t rows_cleared_count)
         score++;
     }
 
-    has_text_changed = true;
+    has_game_text_changed = true;
+}
+
+void restart_game(void)
+{
+    is_game_lost = false;
+    cleanup(true);
+    initialize_everything(true);
 }
 
 void start_game_and_keep_running(void)
@@ -176,11 +213,39 @@ void start_game_and_keep_running(void)
     Uint32 music_start_time = SDL_GetTicks();
     Uint32 end_time, elapsed_time, music_end_time, music_elapsed_time;
 
+menu:
+    restart_game();
+    while (is_window_open == true && is_in_menu == true)
+    {
+        SDL_SetRenderDrawColor(renderer, color_black.r, color_black.g, color_black.b, 255);
+        SDL_RenderClear(renderer);
+
+        end_time = SDL_GetTicks();
+        elapsed_time = end_time - start_time;
+
+        if (elapsed_time > 1500)
+        {
+            start_time = end_time;
+            should_render_tetris_text = true;
+        }
+
+        render_tetris_text(renderer);
+        render_menu_text(renderer);
+
+        poll_events();
+        SDL_RenderPresent(renderer);
+    }
+
+    start_time = SDL_GetTicks();
+
 game:
     while (is_window_open == true && is_game_lost == false)
     {
         render();
         poll_events();
+
+        if (is_in_menu == true)
+            goto menu;
 
         end_time = SDL_GetTicks();
         music_end_time = SDL_GetTicks();
@@ -207,10 +272,7 @@ game:
 
     if (is_game_lost)
     {
-        is_game_lost = false;
-        cleanup(true);
-        initialize_everything(true);
-
+        restart_game();
         goto game;
     }
 }
@@ -226,7 +288,10 @@ void cleanup(bool is_restart)
         text_cleanup(&score_text);
         text_cleanup(&level_text);
         text_cleanup(&line_text);
-        free(font);
+        text_cleanup(&tetris_text);
+        text_cleanup(&made_by_text);
+        text_cleanup(&press_enter_to_start_text);
+        TTF_CloseFont(font);
         sound_cleanup(&music);
         SDL_DestroyRenderer(renderer);
         SDL_DestroyWindow(window);
