@@ -4,6 +4,7 @@ TTF_Font *font = NULL;
 struct text score_text;
 struct text level_text;
 struct text line_text;
+struct text paused_text;
 
 struct text tetris_text;
 struct text made_by_text;
@@ -45,12 +46,19 @@ void render_game_text(SDL_Renderer *renderer)
         update_text(renderer, "Score: ", true, score, color_magenta, 350, 20, true, &score_text);
         update_text(renderer, "Level: ", true, level, color_cyan, 350, 60, false, &level_text);
         update_text(renderer, "Lines: ", true, lines, color_red, 350, 100, false, &line_text);
+
+        if (is_paused == true)
+            update_text(renderer, "PAUSED", false, -1, color_white, 350, 180, false, &paused_text);
+        else
+            update_text(renderer, " ", false, -1, color_white, 350, 180, false, &paused_text);
+
         has_game_text_changed = false;
     }
 
     SDL_RenderCopy(renderer, score_text.text_texture, NULL, &score_text.text_rect);
     SDL_RenderCopy(renderer, level_text.text_texture, NULL, &level_text.text_rect);
     SDL_RenderCopy(renderer, line_text.text_texture, NULL, &line_text.text_rect);
+    SDL_RenderCopy(renderer, paused_text.text_texture, NULL, &paused_text.text_rect);
 }
 
 void render_tetris_text(SDL_Renderer *renderer)
@@ -58,7 +66,6 @@ void render_tetris_text(SDL_Renderer *renderer)
     if (should_render_tetris_text == true)
     {
         TTF_SetFontSize(font, 70);
-
         update_text(renderer, "T  E  T  R  I  S", false, -1, get_random_color(), WINDOW_WIDTH / 4, WINDOW_HEIGHT / 4 + 30, false, &tetris_text);
 
         should_render_tetris_text = false;

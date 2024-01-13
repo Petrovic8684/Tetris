@@ -26,6 +26,7 @@ extern SDL_Window *window;
 extern SDL_Renderer *renderer;
 
 extern bool is_window_open;
+extern bool is_paused;
 extern bool is_in_menu;
 extern bool is_game_lost;
 extern int game_speed;

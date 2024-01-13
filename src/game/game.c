@@ -4,6 +4,7 @@ SDL_Window *window = NULL;
 SDL_Renderer *renderer = NULL;
 
 bool is_window_open = true;
+bool is_paused = false;
 bool is_in_menu = true;
 bool is_game_lost = false;
 int game_speed = STARTING_GAME_SPEED;
@@ -28,8 +29,8 @@ void initialize_sdl(void)
 
 void create_window_and_renderer(const char *title)
 {
-    SDL_CreateWindowAndRenderer(WINDOW_WIDTH, WINDOW_HEIGHT, 0, &window, &renderer);
-    SDL_SetWindowTitle(window, title);
+    window = SDL_CreateWindow("Tetris", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, WINDOW_WIDTH, WINDOW_HEIGHT, 0);
+    renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_PRESENTVSYNC | SDL_RENDERER_ACCELERATED);
 
     if (window == NULL)
     {
@@ -56,29 +57,38 @@ void handle_input(SDL_Event event)
     case SDLK_ESCAPE:
         if (is_in_menu == true)
             return;
+        if (is_paused == true)
+            is_paused = false;
+
         is_in_menu = true;
-    case SDLK_LEFT:
+    case SDLK_p:
         if (is_in_menu == true)
+            return;
+        is_paused = !is_paused;
+        has_game_text_changed = true;
+        break;
+    case SDLK_LEFT:
+        if (is_in_menu == true || is_paused == true)
             return;
         move_current_tetromino(LEFT, true);
         break;
     case SDLK_RIGHT:
-        if (is_in_menu == true)
+        if (is_in_menu == true || is_paused == true)
             return;
         move_current_tetromino(RIGHT, true);
         break;
     case SDLK_DOWN:
-        if (is_in_menu == true)
+        if (is_in_menu == true || is_paused == true)
             return;
         move_current_tetromino(DOWN, true);
         break;
     case SDLK_UP:
-        if (is_in_menu == true)
+        if (is_in_menu == true || is_paused == true)
             return;
         flip_current_tetromino();
         break;
     case SDLK_SPACE:
-        if (is_in_menu == true)
+        if (is_in_menu == true || is_paused == true)
             return;
         if (can_hard_drop == true)
         {
@@ -87,12 +97,12 @@ void handle_input(SDL_Event event)
         }
         break;
     case SDLK_g:
-        if (is_in_menu == true)
+        if (is_in_menu == true || is_paused == true)
             return;
         grid_style = (grid_style + 1) % 3;
         break;
     case SDLK_c:
-        if (is_in_menu == true)
+        if (is_in_menu == true || is_paused == true)
             return;
 
         are_colors_randomized = !are_colors_randomized;
@@ -221,12 +231,21 @@ menu:
         SDL_RenderClear(renderer);
 
         end_time = SDL_GetTicks();
+        music_end_time = SDL_GetTicks();
+
         elapsed_time = end_time - start_time;
+        music_elapsed_time = music_end_time - music_start_time;
 
         if (elapsed_time > 1500)
         {
             start_time = end_time;
             should_render_tetris_text = true;
+        }
+
+        if (music_elapsed_time > 38550) // 38550 is the music length in milliseconds.
+        {
+            music_start_time = music_end_time;
+            play_sound("assets/sounds/music.wav", &music);
         }
 
         render_tetris_text(renderer);
@@ -247,27 +266,31 @@ game:
         if (is_in_menu == true)
             goto menu;
 
-        end_time = SDL_GetTicks();
         music_end_time = SDL_GetTicks();
-
-        elapsed_time = end_time - start_time;
         music_elapsed_time = music_end_time - music_start_time;
 
-        if (elapsed_time > game_speed)
-        {
-            start_time = end_time;
-            if (can_hard_drop == false)
-                can_hard_drop = true;
-            move_current_tetromino(DOWN, false);
-        }
-
-        if (music_elapsed_time > 83540) // 83540 is the music length in milliseconds.
+        if (music_elapsed_time > 38550) // 38550 is the music length in milliseconds.
         {
             music_start_time = music_end_time;
             play_sound("assets/sounds/music.wav", &music);
         }
 
-        update_grid();
+        if (is_paused == false)
+        {
+            end_time = SDL_GetTicks();
+
+            elapsed_time = end_time - start_time;
+
+            if (elapsed_time > game_speed)
+            {
+                start_time = end_time;
+                if (can_hard_drop == false)
+                    can_hard_drop = true;
+                move_current_tetromino(DOWN, false);
+            }
+
+            update_grid();
+        }
     }
 
     if (is_game_lost)

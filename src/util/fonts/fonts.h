@@ -15,6 +15,8 @@ extern TTF_Font *font;
 extern struct text score_text;
 extern struct text level_text;
 extern struct text line_text;
+extern struct text paused_text;
+
 extern struct text tetris_text;
 extern struct text made_by_text;
 extern struct text press_enter_to_start_text;
