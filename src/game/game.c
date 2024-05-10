@@ -22,7 +22,7 @@ void initialize_sdl(void)
 {
     if (SDL_Init(SDL_INIT_EVERYTHING) != 0)
     {
-        fprintf(stderr, "SDL failed to initialise: %s\n", SDL_GetError());
+        fprintf(stderr, "SDL failed to initialize: %s\n", SDL_GetError());
         exit(EXIT_FAILURE);
     }
 }
@@ -34,13 +34,13 @@ void create_window_and_renderer(const char *title)
 
     if (window == NULL)
     {
-        fprintf(stderr, "SDL window failed to initialise: %s\n", SDL_GetError());
+        fprintf(stderr, "SDL window failed to initialize: %s\n", SDL_GetError());
         exit(EXIT_FAILURE);
     }
 
     if (renderer == NULL)
     {
-        fprintf(stderr, "SDL renderer failed to initialise: %s\n", SDL_GetError());
+        fprintf(stderr, "SDL renderer failed to initialize: %s\n", SDL_GetError());
         exit(EXIT_FAILURE);
     }
 }
@@ -131,23 +131,14 @@ void render(void)
     SDL_SetRenderDrawColor(renderer, color_black.r, color_black.g, color_black.b, 255);
     SDL_RenderClear(renderer);
 
-    render_grid(renderer);
-    render_game_text(renderer);
+    render_grid();
+    render_game_text();
 
     SDL_RenderPresent(renderer);
 }
 
-void initialize_everything(bool is_restart)
+void initialize_game(void)
 {
-    if (is_restart == false)
-    {
-        TTF_Init();
-        font = TTF_OpenFont("assets/fonts/runescape.ttf", 36);
-
-        load_sounds();
-        play_music();
-    }
-
     score = 0;
     level = 0;
     lines = 0;
@@ -215,8 +206,17 @@ void increase_score(int8_t rows_cleared_count)
 void restart_game(void)
 {
     is_game_lost = false;
-    cleanup(true);
-    initialize_everything(true);
+
+    free(current_tetromino);
+    current_tetromino = NULL;
+
+    free(grid);
+    grid = NULL;
+
+    free(grid_snapshot);
+    grid_snapshot = NULL;
+
+    initialize_game();
 }
 
 void start_game_and_keep_running(void)
@@ -240,8 +240,8 @@ menu:
             should_render_tetris_text = true;
         }
 
-        render_tetris_text(renderer);
-        render_menu_text(renderer);
+        render_tetris_text();
+        render_menu_text();
 
         poll_events();
         SDL_RenderPresent(renderer);
@@ -282,23 +282,20 @@ game:
     }
 }
 
-void cleanup(bool is_restart)
+void game_cleanup()
 {
-    free(current_tetromino);
-    free(grid);
-    free(grid_snapshot);
+    text_cleanup(&score_text);
+    text_cleanup(&level_text);
+    text_cleanup(&line_text);
+    text_cleanup(&tetris_text);
+    text_cleanup(&made_by_text);
+    text_cleanup(&press_enter_to_start_text);
 
-    if (is_restart == false)
-    {
-        text_cleanup(&score_text);
-        text_cleanup(&level_text);
-        text_cleanup(&line_text);
-        text_cleanup(&tetris_text);
-        text_cleanup(&made_by_text);
-        text_cleanup(&press_enter_to_start_text);
-        sound_cleanup();
-        TTF_CloseFont(font);
-        SDL_DestroyRenderer(renderer);
-        SDL_DestroyWindow(window);
-    }
+    font_cleanup();
+    sound_cleanup();
+
+    SDL_DestroyRenderer(renderer);
+    SDL_DestroyWindow(window);
+
+    SDL_Quit();
 }

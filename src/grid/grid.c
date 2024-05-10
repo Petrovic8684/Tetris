@@ -13,7 +13,7 @@ void initialize_grid(void)
     memset(grid_snapshot->content, 0, sizeof(Uint8[GRID_HEIGHT_CELLS][GRID_WIDTH_CELLS]));
 }
 
-void render_grid(SDL_Renderer *renderer)
+void render_grid(void)
 {
     SDL_Rect cell;
     cell.w = cell.h = TILE_SIZE;

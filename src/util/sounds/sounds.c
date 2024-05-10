@@ -7,9 +7,12 @@ void initialize_sound(void)
 {
     if (Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 2048) < 0)
     {
-        fprintf(stderr, "SDL_mixer failed to initialise: %s\n", Mix_GetError());
+        fprintf(stderr, "SDL_mixer failed to initialize: %s\n", Mix_GetError());
         exit(EXIT_FAILURE);
     }
+
+    load_sounds();
+    play_music();
 }
 
 void load_sounds(void)
@@ -50,4 +53,6 @@ void sound_cleanup(void)
 
     music_sound = NULL;
     clear_row_sound = NULL;
+
+    Mix_Quit();
 }

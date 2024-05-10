@@ -45,11 +45,12 @@ void create_window_and_renderer(const char *title);
 void handle_input(SDL_Event event);
 void poll_events(void);
 void render(void);
-void initialize_everything(bool is_restart);
+void initialize_game(void);
 void increase_game_speed(void);
 void increase_lines_and_level(void);
 void increase_score(int8_t rows_cleared_count);
+void restart_game(void);
 void start_game_and_keep_running(void);
-void cleanup(bool is_restart);
+void game_cleanup(void);
 
 #endif
