@@ -14,7 +14,7 @@ The scoring system implemented in the project is [the same one used in the origi
 |-----|--------|
 | Esc | Open main menu |
 | P | Toggle pause |
-| G | Change background style |
+| G | Change grid style |
 | C | Toggle random tetromino colors |
 | Space | Hard drop tetromino |
 | Down arrow | Soft drop tetromino |
@@ -26,4 +26,5 @@ The scoring system implemented in the project is [the same one used in the origi
 &nbsp;
 
 _Made by Jovan Petrovic_
+&nbsp;
 _2024_

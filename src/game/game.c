@@ -153,7 +153,17 @@ void initialize_game(void)
 
 inline void increase_game_speed(void)
 {
-    game_speed = STARTING_GAME_SPEED - 35 * level;
+    if (game_speed <= 100)
+        return;
+
+    if (level < 5)
+        game_speed -= 100;
+    else if (level >= 5 && level < 9)
+        game_speed -= 50;
+    else if (level >= 9)
+        game_speed -= 20;
+
+    fprintf(stdout, "Game speed: 0 - %d - 1000", game_speed);
 }
 
 void increase_lines_and_level(void)
