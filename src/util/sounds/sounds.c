@@ -1,20 +1,52 @@
 #include "sounds.h"
 
-SDL_AudioDeviceID device_id;
-struct sound music;
+Mix_Music *music_sound = NULL;
+Mix_Chunk *clear_row_sound = NULL;
 
-void play_sound(char *path, struct sound *sound)
+void initialize_sound(void)
 {
-    SDL_LoadWAV(path, &sound->wav_spec, &sound->wav_buffer, &sound->wav_length);
-
-    SDL_AudioDeviceID device_id = SDL_OpenAudioDevice(NULL, 0, &sound->wav_spec, NULL, 0);
-    Uint8 success = SDL_QueueAudio(device_id, sound->wav_buffer, sound->wav_length);
-    SDL_PauseAudioDevice(device_id, 0);
+    if (Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 2048) < 0)
+    {
+        fprintf(stderr, "SDL_mixer failed to initialise: %s\n", Mix_GetError());
+        exit(EXIT_FAILURE);
+    }
 }
 
-void sound_cleanup(struct sound *sound)
+void load_sounds(void)
 {
-    if (device_id)
-        SDL_CloseAudioDevice(device_id);
-    SDL_FreeWAV(sound->wav_buffer);
+    music_sound = Mix_LoadMUS("assets/sounds/music.wav");
+    if (music_sound == NULL)
+    {
+        fprintf(stderr, "Music failed to load: %s\n", Mix_GetError());
+        exit(EXIT_FAILURE);
+    }
+
+    clear_row_sound = Mix_LoadWAV("assets/sounds/music.wav");
+    if (clear_row_sound == NULL)
+    {
+        fprintf(stderr, "Clear row sound failed to load: %s\n", Mix_GetError());
+        exit(EXIT_FAILURE);
+    }
+}
+
+void play_music(void)
+{
+    if (Mix_PlayingMusic() == 0)
+    {
+        Mix_PlayMusic(music_sound, -1);
+    }
+}
+
+void play_clear_row_sound(void)
+{
+    Mix_PlayChannel(-1, clear_row_sound, 0);
+}
+
+void sound_cleanup(void)
+{
+    Mix_FreeMusic(music_sound);
+    Mix_FreeChunk(clear_row_sound);
+
+    music_sound = NULL;
+    clear_row_sound = NULL;
 }

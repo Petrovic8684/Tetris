@@ -10,6 +10,7 @@
     "stdlib.h": "c",
     "fonts.h": "c",
     "sdl_audio.h": "c",
-    "string.h": "c"
+    "string.h": "c",
+    "sounds.h": "c"
   }
 }

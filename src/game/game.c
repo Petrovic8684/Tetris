@@ -143,7 +143,7 @@ void initialize_everything(bool is_restart)
     {
         TTF_Init();
         font = TTF_OpenFont("assets/fonts/runescape.ttf", 36);
-        play_sound("assets/sounds/music.wav", &music);
+        play_music();
     }
 
     score = 0;
@@ -220,8 +220,7 @@ void restart_game(void)
 void start_game_and_keep_running(void)
 {
     Uint32 start_time = SDL_GetTicks();
-    Uint32 music_start_time = SDL_GetTicks();
-    Uint32 end_time, elapsed_time, music_end_time, music_elapsed_time;
+    Uint32 end_time, elapsed_time;
 
 menu:
     restart_game();
@@ -231,21 +230,12 @@ menu:
         SDL_RenderClear(renderer);
 
         end_time = SDL_GetTicks();
-        music_end_time = SDL_GetTicks();
-
         elapsed_time = end_time - start_time;
-        music_elapsed_time = music_end_time - music_start_time;
 
         if (elapsed_time > 1500)
         {
             start_time = end_time;
             should_render_tetris_text = true;
-        }
-
-        if (music_elapsed_time > 38550) // 38550 is the music length in milliseconds.
-        {
-            music_start_time = music_end_time;
-            play_sound("assets/sounds/music.wav", &music);
         }
 
         render_tetris_text(renderer);
@@ -265,15 +255,6 @@ game:
 
         if (is_in_menu == true)
             goto menu;
-
-        music_end_time = SDL_GetTicks();
-        music_elapsed_time = music_end_time - music_start_time;
-
-        if (music_elapsed_time > 38550) // 38550 is the music length in milliseconds.
-        {
-            music_start_time = music_end_time;
-            play_sound("assets/sounds/music.wav", &music);
-        }
 
         if (is_paused == false)
         {
@@ -314,8 +295,8 @@ void cleanup(bool is_restart)
         text_cleanup(&tetris_text);
         text_cleanup(&made_by_text);
         text_cleanup(&press_enter_to_start_text);
+        sound_cleanup();
         TTF_CloseFont(font);
-        sound_cleanup(&music);
         SDL_DestroyRenderer(renderer);
         SDL_DestroyWindow(window);
     }
