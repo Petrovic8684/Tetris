@@ -77,6 +77,8 @@ void check_for_cleared_rows(void)
 {
     auto Uint8 row_sum;
     auto Uint8 row_count = 0;
+    auto bool has_played_sound = false;
+
     for (Uint8 i = 0; i < GRID_HEIGHT_CELLS; i++)
     {
         row_sum = 0;
@@ -87,6 +89,12 @@ void check_for_cleared_rows(void)
         {
             shift_grid_down(i + 1);
             row_count++;
+
+            if (has_played_sound == false)
+            {
+                play_clear_row_sound();
+                has_played_sound = true;
+            }
         }
     }
 

@@ -143,6 +143,8 @@ void initialize_everything(bool is_restart)
     {
         TTF_Init();
         font = TTF_OpenFont("assets/fonts/runescape.ttf", 36);
+
+        load_sounds();
         play_music();
     }
 
@@ -259,7 +261,6 @@ game:
         if (is_paused == false)
         {
             end_time = SDL_GetTicks();
-
             elapsed_time = end_time - start_time;
 
             if (elapsed_time > game_speed)

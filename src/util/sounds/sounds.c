@@ -15,13 +15,14 @@ void initialize_sound(void)
 void load_sounds(void)
 {
     music_sound = Mix_LoadMUS("assets/sounds/music.wav");
+
     if (music_sound == NULL)
     {
         fprintf(stderr, "Music failed to load: %s\n", Mix_GetError());
         exit(EXIT_FAILURE);
     }
 
-    clear_row_sound = Mix_LoadWAV("assets/sounds/music.wav");
+    clear_row_sound = Mix_LoadWAV("assets/sounds/clear_row.wav");
     if (clear_row_sound == NULL)
     {
         fprintf(stderr, "Clear row sound failed to load: %s\n", Mix_GetError());
