@@ -151,7 +151,7 @@ void initialize_game(void)
     initialize_grid();
 }
 
-inline void increase_game_speed(void)
+void increase_game_speed(void)
 {
     if (game_speed <= 100)
         return;
@@ -162,8 +162,6 @@ inline void increase_game_speed(void)
         game_speed -= 50;
     else if (level >= 9)
         game_speed -= 20;
-
-    fprintf(stdout, "Game speed: 0 - %d - 1000", game_speed);
 }
 
 void increase_lines_and_level(void)
@@ -220,11 +218,7 @@ void restart_game(void)
     free(current_tetromino);
     current_tetromino = NULL;
 
-    free(grid);
-    grid = NULL;
-
-    free(grid_snapshot);
-    grid_snapshot = NULL;
+    grid_cleanup();
 
     initialize_game();
 }
@@ -297,6 +291,7 @@ void game_cleanup()
     text_cleanup(&score_text);
     text_cleanup(&level_text);
     text_cleanup(&line_text);
+    text_cleanup(&paused_text);
     text_cleanup(&tetris_text);
     text_cleanup(&made_by_text);
     text_cleanup(&press_enter_to_start_text);
@@ -304,6 +299,7 @@ void game_cleanup()
     font_cleanup();
     sound_cleanup();
 
+    grid_cleanup();
     SDL_DestroyRenderer(renderer);
     SDL_DestroyWindow(window);
 

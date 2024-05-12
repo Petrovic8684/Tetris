@@ -30,5 +30,6 @@ void shift_grid_down(Uint8 row);
 void check_for_cleared_rows(void);
 void make_snapshot(void);
 void update_grid(void);
+void grid_cleanup(void);
 
 #endif

@@ -156,3 +156,12 @@ void update_grid(void)
             grid->color[i + current_tetromino->position.y][j + current_tetromino->position.x] = current_tetromino->color;
         }
 }
+
+void grid_cleanup(void)
+{
+    free(grid);
+    grid = NULL;
+
+    free(grid_snapshot);
+    grid_snapshot = NULL;
+}

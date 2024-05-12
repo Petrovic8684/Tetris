@@ -18,7 +18,6 @@
 #define WINDOW_HEIGHT 600
 
 #define TILE_SIZE 30
-#define MAX_FPS 60.0
 #define MAX_SCORE 999999
 #define STARTING_GAME_SPEED 1000;
 
